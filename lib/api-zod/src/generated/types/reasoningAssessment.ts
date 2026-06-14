@@ -8,6 +8,7 @@
 import type { ReasoningAssessmentFormat } from './reasoningAssessmentFormat';
 import type { ReasoningAssessmentInstrument } from './reasoningAssessmentInstrument';
 import type { ReasoningAssessmentPhase } from './reasoningAssessmentPhase';
+import type { ReasoningAssessmentStatus } from './reasoningAssessmentStatus';
 import type { ReasoningItem } from './reasoningItem';
 
 export interface ReasoningAssessment {
@@ -19,5 +20,7 @@ export interface ReasoningAssessment {
   /** @nullable */
   subtitle?: string | null;
   instructions: string;
+  /** Whether this version of the test has an existing attempt. Used by the client to decide whether to show the length picker (not_started) or resume/review an existing attempt. */
+  status: ReasoningAssessmentStatus;
   items: ReasoningItem[];
 }

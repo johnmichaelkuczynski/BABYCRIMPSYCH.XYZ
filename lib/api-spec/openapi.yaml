@@ -1090,7 +1090,7 @@ components:
 
     ReasoningAssessment:
       type: object
-      required: [id, instrument, phase, format, title, instructions, items]
+      required: [id, instrument, phase, format, title, instructions, status, items]
       properties:
         id: { type: integer }
         instrument:
@@ -1105,6 +1105,13 @@ components:
         title: { type: string }
         subtitle: { type: ["string", "null"] }
         instructions: { type: string }
+        status:
+          type: string
+          enum: [not_started, in_progress, passed]
+          description: >-
+            Whether this version of the test has an existing attempt. Used by the
+            client to decide whether to show the length picker (not_started) or
+            resume/review an existing attempt.
         items:
           type: array
           items:
@@ -1179,6 +1186,13 @@ components:
           description: >-
             When true, begin a fresh attempt even if a previous attempt was
             already submitted. An in-progress attempt is still resumed.
+        length:
+          type: string
+          enum: [short, medium, long]
+          description: >-
+            How many questions this attempt should have. Chosen before starting.
+            Defaults to "medium". Only applied when a brand-new attempt is
+            created; resuming an in-progress attempt keeps its original length.
 
     SubmitReasoningBody:
       type: object

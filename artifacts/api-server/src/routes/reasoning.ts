@@ -22,9 +22,11 @@ import {
   gradeAssessment,
   generateFeedback,
   generateVariantItems,
+  itemCountFor,
   buildReview,
   publicItem,
   gradesFromSummary,
+  type TestLength,
   type DiagnosticItemRow,
   type GeneratedItemContent,
   type ResponseInput,
@@ -172,6 +174,17 @@ router.get("/reasoning/assessments/:assessmentId", async (req, res): Promise<voi
   }
   const format = a.format as DiagFormat;
   const items = await loadTemplateItems(id);
+  const attempts = await db
+    .select()
+    .from(diagnosticAttemptsTable)
+    .where(eq(diagnosticAttemptsTable.assessmentId, id));
+  const status: "not_started" | "in_progress" | "passed" = attempts.some(
+    (x) => x.status === "submitted",
+  )
+    ? "passed"
+    : attempts.some((x) => x.status === "in_progress")
+    ? "in_progress"
+    : "not_started";
   res.json(
     GetReasoningAssessmentResponse.parse({
       id: a.id,
@@ -181,6 +194,7 @@ router.get("/reasoning/assessments/:assessmentId", async (req, res): Promise<voi
       title: a.title,
       subtitle: a.subtitle,
       instructions: a.instructions,
+      status,
       items: items.map((it) => publicItem(it, format)),
     }),
   );
@@ -267,8 +281,11 @@ router.post("/reasoning/assessments/:assessmentId/start", async (req, res): Prom
   // the same kind (different scenarios/items) — including the very first take
   // and any take after a course reset. The seeded template is only the
   // structural blueprint, and the fallback if generation fails.
+  const length = (parsedBody.data.length ?? "medium") as TestLength;
+  const instrument = a.instrument as Instrument;
+  const count = itemCountFor(instrument, length);
   const template = await loadTemplateItems(id);
-  const variant = await generateVariantItems(a.instrument as Instrument, template);
+  const variant = await generateVariantItems(instrument, template, count);
   await insertAttemptItems(id, created.id, variant);
   const items = await loadItemsForAttempt(id, created.id);
 

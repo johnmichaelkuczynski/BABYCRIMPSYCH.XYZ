@@ -21,3 +21,7 @@ Each diagnostic reasoning test is one logical `(instrument, phase)` group offere
 - Written/hybrid grading judges the CORE idea only — short, fragmentary, ALL-CAPS answers must pass; never penalize length/form (gradeAnswer already enforces this).
 - Diagnostic textareas use AnswerInput `compact` + `allowPaste` (no detection here, so pasting is fine).
 - Seed instructions are part of the reseed signature, so wording changes self-heal on restart.
+
+**Selectable length per attempt (on top of format):** before starting (and again on retake) the student picks Short / Medium / Long, mapping to question counts — critical {5,10,15}, ethical {1,2,3}. Medium == prior behavior for critical; ethical was bumped to 1/2/3 so the three options stay distinct.
+- `length` is an OPTIONAL field on the start request (default medium); count resolves server-side via `itemCountFor(instrument, length)`. `LENGTH_COUNTS` is duplicated client+server — keep them in lockstep if either changes.
+- Resuming an `in_progress` attempt sends NO length and reuses the existing item set (original length preserved); only `not_started` or an explicit retake shows the picker. Detail GET returns a required `status` (not_started|in_progress|passed) the frontend keys off.

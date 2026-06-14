@@ -19,6 +19,22 @@ import { AnswerInput } from "@/components/AnswerInput";
 import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 
 type Format = "mcq" | "hybrid" | "written";
+type TestLength = "short" | "medium" | "long";
+
+// How many questions each length contains, per instrument. Mirrors the server
+// (see LENGTH_COUNTS in api-server/src/lib/reasoning.ts) so the picker can show
+// the question count before the student commits.
+const LENGTH_COUNTS: Record<"ethical" | "critical", Record<TestLength, number>> = {
+  critical: { short: 5, medium: 10, long: 15 },
+  ethical: { short: 1, medium: 2, long: 3 },
+};
+
+const LENGTH_ORDER: TestLength[] = ["short", "medium", "long"];
+const LENGTH_LABELS: Record<TestLength, string> = {
+  short: "Short",
+  medium: "Medium",
+  long: "Long",
+};
 
 export default function ReasoningRunner() {
   const params = useParams();
@@ -40,6 +56,12 @@ export default function ReasoningRunner() {
   // template; each retake returns freshly generated questions of the same kind.
   const [items, setItems] = useState<ReasoningItem[] | null>(null);
 
+  // Whether an attempt has been kicked off (so the auto-resume effect and the
+  // length picker don't fight). `forcePicker` forces the length chooser back up
+  // after a retake even though the assessment status is still "passed".
+  const [began, setBegan] = useState(false);
+  const [forcePicker, setForcePicker] = useState(false);
+
   // Option selections (mcq / hybrid): itemId -> optionIndex
   const [mcqAnswers, setMcqAnswers] = useState<Record<number, number>>({});
   // Written answers (written / hybrid): itemId -> text
@@ -49,14 +71,25 @@ export default function ReasoningRunner() {
   const [error, setError] = useState<string | null>(null);
 
   const format = (assessment?.format ?? "mcq") as Format;
+  const instrument = (assessment?.instrument ?? "critical") as
+    | "ethical"
+    | "critical";
 
-  useEffect(() => {
-    if (!assessmentId || startAttempt.isPending || result) return;
+  function beginAttempt(length?: TestLength, retake?: boolean) {
+    setBegan(true);
+    setError(null);
     startAttempt.mutate(
-      { assessmentId },
+      {
+        assessmentId,
+        data: {
+          ...(length ? { length } : {}),
+          ...(retake ? { retake: true } : {}),
+        },
+      },
       {
         onSuccess: (data) => {
           setItems(data.items);
+          setForcePicker(false);
           if (data.status === "submitted") {
             setAlreadyPassed({
               feedback: data.feedback ?? null,
@@ -66,10 +99,20 @@ export default function ReasoningRunner() {
             });
           }
         },
+        onError: () => setBegan(false),
       },
     );
+  }
+
+  // Resume an in-progress attempt or surface a passed one for review without
+  // asking for a length. A brand-new ("not_started") test waits for the student
+  // to pick a length first.
+  useEffect(() => {
+    if (!assessment || began || result || forcePicker) return;
+    if (assessment.status === "not_started") return;
+    beginAttempt();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentId]);
+  }, [assessment?.id, assessment?.status]);
 
   function buildResponses(list: ReasoningItem[]): ReasoningResponseInput[] {
     return list.map((item) => {
@@ -100,19 +143,16 @@ export default function ReasoningRunner() {
   }
 
   function handleRetake() {
+    // Bring the length picker back up so the student can pick a new length for
+    // the retake instead of silently reusing the previous one.
     setError(null);
-    startAttempt.mutate(
-      { assessmentId, data: { retake: true } },
-      {
-        onSuccess: (data) => {
-          setItems(data.items);
-          setResult(null);
-          setAlreadyPassed(null);
-          setMcqAnswers({});
-          setWrittenAnswers({});
-        },
-      },
-    );
+    setItems(null);
+    setResult(null);
+    setAlreadyPassed(null);
+    setMcqAnswers({});
+    setWrittenAnswers({});
+    setBegan(false);
+    setForcePicker(true);
   }
 
   function handleSubmit() {
@@ -129,7 +169,94 @@ export default function ReasoningRunner() {
     );
   }
 
-  if (isLoading || !assessment || (!items && !alreadyPassed && !result)) {
+  if (isLoading || !assessment) {
+    return (
+      <Layout>
+        <div className="p-8 max-w-3xl mx-auto w-full flex flex-col gap-8">
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </Layout>
+    );
+  }
+
+  // Length picker — shown before a brand-new attempt (and on retake). Resuming
+  // or reviewing an existing attempt skips this and keeps the original length.
+  const showPicker =
+    (assessment.status === "not_started" || forcePicker) &&
+    !began &&
+    !result &&
+    !alreadyPassed;
+  if (showPicker) {
+    const counts = LENGTH_COUNTS[instrument];
+    return (
+      <Layout>
+        <div className="p-8 max-w-2xl mx-auto w-full flex flex-col gap-8">
+          <div className="border-b pb-4">
+            <h1 className="text-2xl font-serif font-bold text-primary">
+              {assessment.title}
+            </h1>
+            {assessment.subtitle && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {assessment.subtitle}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <h2 className="font-serif text-lg font-semibold">
+              How long would you like this test?
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Pick a length — fewer questions for a quick check, more for a
+              fuller picture. You can choose differently each time you take it.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {LENGTH_ORDER.map((len) => {
+              const n = counts[len];
+              return (
+                <button
+                  key={len}
+                  type="button"
+                  onClick={() => beginAttempt(len, forcePicker)}
+                  disabled={startAttempt.isPending}
+                  className="text-left rounded-lg border border-border hover:border-primary hover:bg-secondary transition-colors p-4 flex flex-col gap-1 disabled:opacity-50"
+                  data-testid={`button-length-${len}`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="font-medium">{LENGTH_LABELS[len]}</span>
+                    {len === "medium" && (
+                      <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                        Standard
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {n} {n === 1 ? "question" : "questions"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {startAttempt.isPending && (
+            <p className="text-sm text-muted-foreground">
+              Preparing your questions…
+            </p>
+          )}
+          <div>
+            <Link href="/reasoning">
+              <Button variant="outline" data-testid="button-back-reasoning-picker">
+                Back to Assessments
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Still loading the attempt's items (auto-resume, or right after a length pick).
+  if (!items && !alreadyPassed && !result) {
     return (
       <Layout>
         <div className="p-8 max-w-3xl mx-auto w-full flex flex-col gap-8">

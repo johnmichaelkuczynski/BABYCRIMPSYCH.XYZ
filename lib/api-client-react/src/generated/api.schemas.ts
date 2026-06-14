@@ -532,6 +532,18 @@ export const ReasoningAssessmentFormat = {
   written: 'written',
 } as const;
 
+/**
+ * Whether this version of the test has an existing attempt. Used by the client to decide whether to show the length picker (not_started) or resume/review an existing attempt.
+ */
+export type ReasoningAssessmentStatus = typeof ReasoningAssessmentStatus[keyof typeof ReasoningAssessmentStatus];
+
+
+export const ReasoningAssessmentStatus = {
+  not_started: 'not_started',
+  in_progress: 'in_progress',
+  passed: 'passed',
+} as const;
+
 export interface ReasoningAssessment {
   id: number;
   instrument: ReasoningAssessmentInstrument;
@@ -541,6 +553,8 @@ export interface ReasoningAssessment {
   /** @nullable */
   subtitle?: string | null;
   instructions: string;
+  /** Whether this version of the test has an existing attempt. Used by the client to decide whether to show the length picker (not_started) or resume/review an existing attempt. */
+  status: ReasoningAssessmentStatus;
   items: ReasoningItem[];
 }
 
@@ -667,9 +681,23 @@ export interface RewriteLectureInput {
   baseLevel?: RewriteLectureInputBaseLevel;
 }
 
+/**
+ * How many questions this attempt should have. Chosen before starting. Defaults to "medium". Only applied when a brand-new attempt is created; resuming an in-progress attempt keeps its original length.
+ */
+export type StartReasoningBodyLength = typeof StartReasoningBodyLength[keyof typeof StartReasoningBodyLength];
+
+
+export const StartReasoningBodyLength = {
+  short: 'short',
+  medium: 'medium',
+  long: 'long',
+} as const;
+
 export interface StartReasoningBody {
   /** When true, begin a fresh attempt even if a previous attempt was already submitted. An in-progress attempt is still resumed. */
   retake?: boolean;
+  /** How many questions this attempt should have. Chosen before starting. Defaults to "medium". Only applied when a brand-new attempt is created; resuming an in-progress attempt keeps its original length. */
+  length?: StartReasoningBodyLength;
 }
 
 export interface SubmitReasoningBody {

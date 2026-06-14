@@ -24,6 +24,24 @@ export type DiagFormat = "mcq" | "hybrid" | "written";
 export type ReasoningMetricLike = ReasoningMetric;
 export type Instrument = "ethical" | "critical";
 
+// How many questions each test length contains, per instrument. "medium" is the
+// previous default. Critical Reasoning cycles through five skill areas, so its
+// counts are multiples that stay balanced; Professional Judgment is one or a few
+// in-depth scenarios.
+export type TestLength = "short" | "medium" | "long";
+
+const LENGTH_COUNTS: Record<Instrument, Record<TestLength, number>> = {
+  critical: { short: 5, medium: 10, long: 15 },
+  ethical: { short: 1, medium: 2, long: 3 },
+};
+
+export function itemCountFor(
+  instrument: Instrument,
+  length: TestLength,
+): number {
+  return LENGTH_COUNTS[instrument][length];
+}
+
 export interface ReasoningMetric {
   label: string;
   value: string;
@@ -329,8 +347,16 @@ function templateContent(items: DiagnosticItemRow[]): GeneratedItemContent[] {
 
 async function generateCriticalVariant(
   items: DiagnosticItemRow[],
+  count: number,
 ): Promise<GeneratedItemContent[]> {
-  const skills = items.map((it) => itemScoring(it).skillArea ?? "analysis");
+  // Build a skill-area list of the requested length by cycling the template's
+  // skill areas (falling back to the five canonical critical-thinking skills).
+  const pool = items.map((it) => itemScoring(it).skillArea ?? "analysis");
+  const base =
+    pool.length > 0
+      ? pool
+      : ["analysis", "inference", "evaluation", "deduction", "induction"];
+  const skills = Array.from({ length: count }, (_, i) => base[i % base.length]!);
   const examplePrompts = items.slice(0, 3).map((it) => it.prompt);
   const system =
     "You are an assessment author writing ORIGINAL critical-thinking multiple-choice questions. " +
@@ -379,6 +405,17 @@ async function generateCriticalVariant(
 }
 
 async function generateEthicalVariant(
+  items: DiagnosticItemRow[],
+  count: number,
+): Promise<GeneratedItemContent[]> {
+  // Each scenario is generated independently so the test can be any length.
+  const generated = await Promise.all(
+    Array.from({ length: count }, () => generateOneEthicalScenario(items)),
+  );
+  return generated.flat();
+}
+
+async function generateOneEthicalScenario(
   items: DiagnosticItemRow[],
 ): Promise<GeneratedItemContent[]> {
   const template = items[0];
@@ -431,16 +468,17 @@ async function generateEthicalVariant(
 export async function generateVariantItems(
   instrument: Instrument,
   templateItems: DiagnosticItemRow[],
+  count: number,
 ): Promise<GeneratedItemContent[]> {
-  if (templateItems.length === 0) return [];
+  if (templateItems.length === 0 || count <= 0) return [];
   try {
     const generated =
       instrument === "critical"
-        ? await generateCriticalVariant(templateItems)
-        : await generateEthicalVariant(templateItems);
-    if (generated.length === templateItems.length) return generated;
+        ? await generateCriticalVariant(templateItems, count)
+        : await generateEthicalVariant(templateItems, count);
+    if (generated.length === count) return generated;
     logger.warn(
-      { instrument, want: templateItems.length, got: generated.length },
+      { instrument, want: count, got: generated.length },
       "Reasoning variant: count mismatch, using template",
     );
   } catch (err) {
@@ -449,7 +487,16 @@ export async function generateVariantItems(
       "Reasoning variant generation failed, using template items",
     );
   }
-  return templateContent(templateItems);
+  // Fallback: cycle the seeded template items up/down to the requested length.
+  return cycleToLength(templateContent(templateItems), count);
+}
+
+function cycleToLength(
+  items: GeneratedItemContent[],
+  count: number,
+): GeneratedItemContent[] {
+  if (items.length === 0) return [];
+  return Array.from({ length: count }, (_, i) => items[i % items.length]!);
 }
 
 // --- Review ---------------------------------------------------------------

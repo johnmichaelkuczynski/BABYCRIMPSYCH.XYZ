@@ -621,6 +621,7 @@ export const GetReasoningAssessmentResponse = zod.object({
   "title": zod.string(),
   "subtitle": zod.string().nullish(),
   "instructions": zod.string(),
+  "status": zod.enum(['not_started', 'in_progress', 'passed']).describe('Whether this version of the test has an existing attempt. Used by the client to decide whether to show the length picker (not_started) or resume\/review an existing attempt.'),
   "items": zod.array(zod.object({
   "id": zod.number(),
   "position": zod.number(),
@@ -638,7 +639,8 @@ export const StartReasoningAttemptParams = zod.object({
 })
 
 export const StartReasoningAttemptBody = zod.object({
-  "retake": zod.boolean().optional().describe('When true, begin a fresh attempt even if a previous attempt was already submitted. An in-progress attempt is still resumed.')
+  "retake": zod.boolean().optional().describe('When true, begin a fresh attempt even if a previous attempt was already submitted. An in-progress attempt is still resumed.'),
+  "length": zod.enum(['short', 'medium', 'long']).optional().describe('How many questions this attempt should have. Chosen before starting. Defaults to \"medium\". Only applied when a brand-new attempt is created; resuming an in-progress attempt keeps its original length.')
 })
 
 export const StartReasoningAttemptResponse = zod.object({
