@@ -36,6 +36,19 @@ const LENGTH_LABELS: Record<TestLength, string> = {
   long: "Long",
 };
 
+// Reverse-lookup: given how many questions an attempt actually has, name the
+// length. Used so the test header can always show the length even when the
+// attempt was resumed (no length param around to remember).
+function lengthFromCount(
+  instrument: "ethical" | "critical",
+  count: number,
+): TestLength | null {
+  const counts = LENGTH_COUNTS[instrument];
+  return (
+    LENGTH_ORDER.find((len) => counts[len] === count) ?? null
+  );
+}
+
 export default function ReasoningRunner() {
   const params = useParams();
   const assessmentId = Number(params.id);
@@ -113,6 +126,18 @@ export default function ReasoningRunner() {
         onError: () => setBegan(false),
       },
     );
+  }
+
+  // Return to the length picker from inside a running test. We don't discard the
+  // server attempt here — picking a length restarts it (retake) — but we clear
+  // local answers so the chooser shows cleanly.
+  function changeLength() {
+    setBegan(false);
+    setItems(null);
+    setMcqAnswers({});
+    setWrittenAnswers({});
+    setError(null);
+    setForcePicker(true);
   }
 
   // Drive the initial screen once the assessment loads:
@@ -393,6 +418,29 @@ export default function ReasoningRunner() {
         <div className="border-b pb-4">
           <h1 className="text-2xl font-serif font-bold text-primary">{assessment.title}</h1>
           {assessment.subtitle && <p className="text-sm text-muted-foreground mt-1">{assessment.subtitle}</p>}
+          {(() => {
+            const count = (items ?? []).length;
+            const len = lengthFromCount(instrument, count);
+            return (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span
+                  className="inline-flex items-center rounded-full bg-chart-2/10 text-chart-2 border border-chart-2/30 px-3 py-1 text-xs font-semibold"
+                  data-testid="badge-test-length"
+                >
+                  {len ? `${LENGTH_LABELS[len]} length` : "Custom length"} ·{" "}
+                  {count} {count === 1 ? "question" : "questions"}
+                </span>
+                <button
+                  type="button"
+                  onClick={changeLength}
+                  className="text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80"
+                  data-testid="button-change-length"
+                >
+                  Change length
+                </button>
+              </div>
+            );
+          })()}
           <p className="text-sm text-muted-foreground mt-3">{assessment.instructions}</p>
         </div>
 
