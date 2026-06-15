@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetLecture,
+  useGetWeek,
   useRewriteLecture,
   useClearLectureRewrite,
   useAskTutor,
@@ -20,7 +21,7 @@ import { AnswerInput } from "@/components/AnswerInput";
 import { MathKeyboard, insertAtTextareaCursor } from "@/components/MathKeyboard";
 import { StarterQuestionCard } from "@/components/StarterQuestionCard";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageSquare, Sparkles, Send, X, RefreshCw, CheckCircle2, XCircle, Wand2, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, MessageSquare, Sparkles, Send, X, RefreshCw, CheckCircle2, XCircle, Wand2, RotateCcw } from "lucide-react";
 
 type ChatMsg = { role: "user" | "tutor"; text: string };
 
@@ -28,6 +29,19 @@ export default function LectureView() {
   const params = useParams();
   const lectureId = Number(params.lectureId);
   const { data: lecture, isLoading } = useGetLecture(lectureId);
+  const { data: week } = useGetWeek(lecture?.weekNumber ?? 1);
+
+  // Adjacent lectures within the unit, so the reader can move straight to the
+  // next/previous lecture without going back to the dashboard.
+  const { prevLecture, nextLecture } = useMemo(() => {
+    const list = week?.lectures ?? [];
+    const idx = list.findIndex((l) => l.id === lectureId);
+    if (idx === -1) return { prevLecture: null, nextLecture: null };
+    return {
+      prevLecture: idx > 0 ? list[idx - 1]! : null,
+      nextLecture: idx < list.length - 1 ? list[idx + 1]! : null,
+    };
+  }, [week?.lectures, lectureId]);
 
   // shared selected-text state (used by both Tutor and Practice)
   const [selectedText, setSelectedText] = useState("");
@@ -387,6 +401,45 @@ export default function LectureView() {
                   Tip: highlight any passage above to ask the tutor about it, or to generate practice problems specifically on what you selected.
                 </div>
               </div>
+
+              {(prevLecture || nextLecture) && (
+                <nav className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {prevLecture ? (
+                    <Link href={`/lectures/${prevLecture.id}`}>
+                      <button
+                        className="group w-full h-full text-left rounded-lg border border-border bg-card hover:border-primary/50 transition-colors p-4 flex items-center gap-3"
+                        data-testid="button-prev-lecture"
+                      >
+                        <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
+                        <span className="flex flex-col min-w-0">
+                          <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                            Previous
+                          </span>
+                          <span className="font-medium truncate">{prevLecture.title}</span>
+                        </span>
+                      </button>
+                    </Link>
+                  ) : (
+                    <span className="hidden sm:block" />
+                  )}
+                  {nextLecture && (
+                    <Link href={`/lectures/${nextLecture.id}`} className="sm:col-start-2">
+                      <button
+                        className="group w-full h-full text-right rounded-lg border border-primary/40 bg-primary/5 hover:border-primary transition-colors p-4 flex items-center justify-end gap-3"
+                        data-testid="button-next-lecture"
+                      >
+                        <span className="flex flex-col min-w-0 items-end">
+                          <span className="text-xs uppercase tracking-wider text-primary/80">
+                            Next lecture
+                          </span>
+                          <span className="font-medium truncate">{nextLecture.title}</span>
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-primary shrink-0" />
+                      </button>
+                    </Link>
+                  )}
+                </nav>
+              )}
             </article>
           ) : (
             <div className="mt-8">Lecture not found.</div>
