@@ -1,8 +1,8 @@
-# 🔎 Criminal Psychology for Children
+# 🔎 Basic Criminal Psychology
 
-**A friendly, one-unit intro to criminal psychology that teaches, tutors, drills, and grades itself — for curious students and adults alike.**
+**A self-paced, one-unit course in criminal psychology that teaches, tutors, drills, and grades itself.**
 
-Criminal Psychology for Children is a self-paced, single-user web course that delivers a plain-language introduction to criminal psychology — taught, tutored, drilled, and graded entirely by AI, with built-in academic-integrity enforcement. No math, coding, or statistics required. The material is kept tasteful and age-appropriate: it explains the *science* of why people offend and how the justice system reasons, never anything graphic or sensational.
+Basic Criminal Psychology is a self-paced, single-user web course that delivers a thorough introduction to criminal psychology — taught, tutored, drilled, and graded entirely by AI, with built-in academic-integrity enforcement. It covers the *science* of why people offend and how the justice system reasons, and is built for adults beginning the discipline from the ground up.
 
 ---
 
@@ -14,7 +14,7 @@ Criminal Psychology for Children is a self-paced, single-user web course that de
 - **Adaptive practice** — generated problem sets that get harder on a streak and ease off after a miss; per-session difficulty persists.
 - **AI-graded assignments** — two homework sets, a timed unit test, and a cumulative final, each scored for semantic equivalence with a written rationale and a rolled-up percent score.
 - **Two-layer AI-authorship detection** — every submission is screened by a static text classifier (GPTZero) **and** a diachronic keystroke-pattern detector, each with a human-readable verdict.
-- **Diagnostic reasoning assessments** — two original instruments (Professional Judgment and Critical Reasoning) run at baseline and after the unit, counting for 20% of the final grade.
+- **Diagnostic reasoning assessments** — two original instruments (Criminal Psychology subject reasoning and General Reasoning), offered in multiple formats and lengths at four points across the course. They are ungraded practice, takeable anytime, and never affect the grade.
 - **Live analytics** — dashboard KPIs (attempts, accuracy, streak), per-topic mastery, and a recent-activity feed.
 - **Operator diagnostics** — one-click self-tests that verify the entire stack (database, OpenAI, GPTZero, detection, and the practice/grade loop) before you trust a session.
 
@@ -95,11 +95,11 @@ Open the **Diagnostics** page in the app (or hit the API directly) to run:
 
 ## 📚 Who it's for
 
-- **Middle schoolers & curious adults** — a complete, plain-language intro with on-demand tutoring and adaptive practice.
+- **Adults entering the discipline** — anyone starting criminal psychology from the ground up, with on-demand tutoring and adaptive practice.
 - **Instructors & curriculum designers** — a working reference for AI-taught, AI-graded, AI-detection-screened coursework.
 - **Academic-integrity researchers** — a live testbed for layered AI-authorship detection (text classification + keystroke behavior).
 - **Product & engineering teams** — a reference implementation of contract-first full-stack architecture, streaming AI UX, and self-diagnostic tooling.
 
 ---
 
-*Criminal Psychology for Children — where the curriculum, the tutor, the grader, and the integrity check all live in one room.*
+*Basic Criminal Psychology — where the curriculum, the tutor, the grader, and the integrity check all live in one room.*

@@ -26,8 +26,8 @@ export function Scene4() {
         animate={phase >= 1 ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
       >
-        <span className="text-primary block mb-2">CRIMINAL PSYCHOLOGY</span>
-        <span className="text-white">FOR CHILDREN</span>
+        <span className="text-primary block mb-2">BASIC CRIMINAL</span>
+        <span className="text-white">PSYCHOLOGY</span>
       </motion.div>
 
       <motion.div 

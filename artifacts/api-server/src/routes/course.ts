@@ -21,9 +21,9 @@ const router: IRouter = Router();
 
 const WEEK_TITLES: Record<number, { title: string; summary: string }> = {
   1: {
-    title: "Criminal Psychology for Everyone",
+    title: "Unit 1 — Criminal Psychology",
     summary:
-      "What criminal psychology really is, why people offend, what's inside the psychopath, how profiling works, why eyewitnesses and memory fail, how interrogations produce false confessions, what the insanity defense actually means, and how we try to predict danger — all in plain language, no technical skills required.",
+      "What criminal psychology really is, why people offend, what's inside the psychopath, how profiling works, why eyewitnesses and memory fail, how interrogations produce false confessions, what the insanity defense actually means, and how we try to predict danger.",
   },
 };
 
@@ -112,7 +112,7 @@ router.get("/course/overview", async (_req, res) => {
 
   res.json(
     GetCourseOverviewResponse.parse({
-      title: "Criminal Psychology for Children",
+      title: "Basic Criminal Psychology",
       weeks,
       totals: { assignmentsCompleted, assignmentsTotal, practiceCount },
     }),

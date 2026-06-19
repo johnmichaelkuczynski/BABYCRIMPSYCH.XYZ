@@ -1,18 +1,18 @@
-# 🔎 Criminal Psychology for Children
+# 🔎 Basic Criminal Psychology
 
-**A Friendly, One-Unit Intro to Criminal Psychology That Teaches, Tutors, and Proofs Itself — for Curious Students and Adults Alike**
+**A Self-Paced, One-Unit Course in Criminal Psychology That Teaches, Tutors, Drills, and Grades Itself**
 
 ---
 
 ## 🧩 Overview
 
-Criminal Psychology for Children is a self-paced, single-user web course that delivers a friendly, plain-language introduction to criminal psychology — taught, tutored, drilled, and graded entirely by AI, with built-in academic-integrity enforcement. No math, coding, statistics, or other technical skills required.
+Basic Criminal Psychology is a self-paced, single-user web course that delivers a thorough introduction to criminal psychology — taught, tutored, drilled, and graded entirely by AI, with built-in academic-integrity enforcement. It is built for adults beginning the discipline from the ground up.
 
-It turns the everyday human habit of *asking why people act the way they do* into one product: read each lesson at the depth you want, ask a tutor scoped to the exact section you're on, drill questions whose difficulty adapts to you in real time, and submit homework, a unit test, and a final that are AI-graded with feedback and screened for AI-generated answers. The material is kept tasteful and age-appropriate — it explains the science of why people offend and how the justice system thinks, never sensational or graphic.
+It turns the everyday human habit of *asking why people act the way they do* into one product: read each lesson at the depth you want, ask a tutor scoped to the exact section you're on, drill questions whose difficulty adapts to you in real time, and submit homework, a unit test, and a final that are AI-graded with feedback and screened for AI-generated answers. The material is kept rigorous and non-sensational — it explains the science of why people offend and how the justice system thinks, never anything graphic or gratuitous.
 
 The curriculum is organized into **one unit and 8 topics**: 1.1 what criminal psychology is; 1.2 why people offend; 1.3 inside the psychopath; 1.4 profiling the offender; 1.5 eyewitnesses and memory; 1.6 interrogation and false confessions; 1.7 madness and the law; and 1.8 predicting danger.
 
-Designed for **middle schoolers, curious adults wanting brief but meaningful exposure, instructors evaluating AI-taught coursework, and researchers studying AI academic integrity**, Criminal Psychology for Children pairs a real curriculum with two layers of AI-authorship detection — surfacing not just *whether* the writing looks AI-generated, but whether the *act of producing it* did.
+Designed for **adults entering the discipline (often graduate students or established academics moving into a new field), instructors evaluating AI-taught coursework, and researchers studying AI academic integrity**, Basic Criminal Psychology pairs a real curriculum with two layers of AI-authorship detection — surfacing not just *whether* the writing looks AI-generated, but whether the *act of producing it* did.
 
 ---
 
@@ -50,7 +50,7 @@ Designed for **middle schoolers, curious adults wanting brief but meaningful exp
 
 ## 📊 Designed For
 
-- **Middle Schoolers & Curious Adults:** A complete, plain-language intro to criminal psychology delivered with on-demand tutoring and adaptive practice — no instructor, math, or coding required.
+- **Adults Entering the Discipline:** A complete introduction to criminal psychology delivered with on-demand tutoring and adaptive practice — ideal for anyone starting the field from the ground up, including graduate students and academics moving into a new area.
 - **Instructors & Curriculum Designers:** A working reference for what AI-taught, AI-graded, AI-detection-screened coursework actually looks like end-to-end.
 - **Academic-Integrity Researchers:** A live testbed for layered AI-authorship detection that combines text-based classification with behavioral keystroke evidence.
 - **Product & Engineering Teams:** A reference implementation of contract-first full-stack architecture, streaming AI UX, and self-diagnostic operator tooling in a Replit pnpm monorepo.
@@ -59,11 +59,11 @@ Designed for **middle schoolers, curious adults wanting brief but meaningful exp
 
 ## 💡 Core Idea
 
-Criminal Psychology for Children reframes an AI-taught course as a *closed accountability loop*.
+Basic Criminal Psychology reframes an AI-taught course as a *closed accountability loop*.
 
 It doesn't just teach the material and grade the homework — it **teaches**, **tutors**, **drills**, **grades**, **detects misuse**, and **proves the whole pipeline still works** with a single click. The result is a self-paced course that students can actually trust to be fair, and that instructors can actually trust to be honest.
 
-**Criminal Psychology for Children — where the curriculum, the tutor, the grader, and the integrity check all live in one room.**
+**Basic Criminal Psychology — where the curriculum, the tutor, the grader, and the integrity check all live in one room.**
 
 ---
 

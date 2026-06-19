@@ -14,7 +14,7 @@ import { logger } from "./logger";
 // the value stored in seed_meta; a mismatch forces a full re-seed, so content
 // edits self-heal in every environment (including a republished production)
 // without a manual database wipe.
-const SEED_CONTENT_VERSION = "2026-06-14-criminal-psychology-for-children-v1";
+const SEED_CONTENT_VERSION = "2026-06-19-basic-criminal-psychology-v2";
 
 type SeedTopic = {
   slug: string;
@@ -26,7 +26,7 @@ type SeedTopic = {
 };
 
 const TOPICS: SeedTopic[] = [
-  // Unit 1 — Criminal Psychology for Everyone
+  // Unit 1 — Criminal Psychology
   {
     slug: "what-criminal-psychology-is",
     title: "What criminal psychology is",
@@ -341,7 +341,7 @@ const ASSIGNMENTS: SeedAssignment[] = [
     isTimed: false,
     timeLimitMinutes: null,
     instructions:
-      "Untimed practice covering sections 1.5–1.8. Answer each question in a few sentences (about 3–5) in your own words. No math is required — explain your reasoning. One-word answers won't receive credit.",
+      "Untimed practice covering sections 1.5–1.8. Answer each question in a few sentences (about 3–5) in your own words, explaining your reasoning. One-word answers won't receive credit.",
     problems: [
       {
         topicSlug: "eyewitness-memory",
@@ -384,12 +384,12 @@ const ASSIGNMENTS: SeedAssignment[] = [
   },
   {
     kind: "test",
-    title: "Unit Test — Criminal Psychology for Everyone",
+    title: "Unit Test",
     weekNumber: 1,
     isTimed: true,
     timeLimitMinutes: 30,
     instructions:
-      "Timed. 30 minutes. Covers sections 1.1–1.8. Answer each question in a few sentences (about 4–6) in your own words. No math is required. Pasting is disabled; keystrokes are screened for AI use.",
+      "Timed. 30 minutes. Covers sections 1.1–1.8. Answer each question in a few sentences (about 4–6) in your own words. Pasting is disabled; keystrokes are screened for AI use.",
     problems: [
       {
         topicSlug: "what-criminal-psychology-is",
@@ -467,12 +467,12 @@ const ASSIGNMENTS: SeedAssignment[] = [
   },
   {
     kind: "final",
-    title: "Final — Criminal Psychology for Everyone",
+    title: "Final Exam",
     weekNumber: 1,
     isTimed: true,
     timeLimitMinutes: 45,
     instructions:
-      "Timed cumulative final. 45 minutes. Covers the whole course (sections 1.1–1.8). Answer each question in a paragraph (about 5–7 sentences) in your own words. No math is required. Pasting is disabled; keystrokes are screened for AI use.",
+      "Timed cumulative final. 45 minutes. Covers the whole course (sections 1.1–1.8). Answer each question in a paragraph (about 5–7 sentences) in your own words. Pasting is disabled; keystrokes are screened for AI use.",
     problems: [
       {
         topicSlug: "predicting-danger",
@@ -636,7 +636,7 @@ export async function seedReasoningPrimersIfMissing(): Promise<void> {
 }
 
 export async function seedIfEmpty(): Promise<void> {
-  // The course was migrated to the Criminal Psychology for Children
+  // The course was migrated to the Basic Criminal Psychology
   // syllabus. Detect the marker topic; if present and the content version
   // matches, the content is current and we skip. This makes the seed
   // self-healing across environments: a database that still holds older content
@@ -685,7 +685,7 @@ export async function seedIfEmpty(): Promise<void> {
     const row = (existing.rows[0] ?? {}) as { n?: number };
     if ((row.n ?? 0) > 0) {
       logger.warn(
-        "Seed: stale course content detected — replacing with the Criminal Psychology for Children curriculum",
+        "Seed: stale course content detected — replacing with the Basic Criminal Psychology curriculum",
       );
       await tx.execute(
         sql`TRUNCATE TABLE answers, attempts, practice_attempts, practice_problems, practice_sessions, problems, assignments, lectures, topics, diagnostic_responses, diagnostic_attempts, diagnostic_items, diagnostic_assessments RESTART IDENTITY CASCADE`,

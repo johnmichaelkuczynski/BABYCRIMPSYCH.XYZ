@@ -235,13 +235,13 @@ function ClerkProviderWithRoutes() {
         signIn: {
           start: {
             title: "Welcome back",
-            subtitle: "Sign in to continue your Criminal Psychology for Children course",
+            subtitle: "Sign in to continue your Basic Criminal Psychology course",
           },
         },
         signUp: {
           start: {
             title: "Create your account",
-            subtitle: "Start your criminal psychology journey with Criminal Psychology for Children",
+            subtitle: "Start the Basic Criminal Psychology course",
           },
         },
       }}
